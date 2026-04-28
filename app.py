@@ -1,61 +1,79 @@
 import streamlit as st
 import networkx as nx
+import json
+import os
 
-students = {"James Adeyemi" :        [1,0,0,1,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0],
-"Elizabeth Olawale" : [0,1,1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0],
-"Benjamin Babatunde" : [1,0,0,0,0,0,0,1,0,1,0,0,0,0,1,0,0,0,0,0],
-"Catherine Olatunji" :   [0,0,0,0,0,0,1,0,0,1,0,0,1,0,1,0,0,0,0,0],
-"Samuel Okorocha" :      [0,0,0,1,1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1],
-"Victoria Akinyemi" :    [0,1,1,0,0,1,0,0,0,0,0,0,0,0,0,1,0,1,0,0],
-"Daniel Oyedele" :       [1,0,0,0,0,0,0,1,0,0,0,0,1,0,1,1,0,0,0,0],
-"Margaret Balogun" :     [0,0,0,0,0,0,1,0,0,1,0,0,1,0,1,0,0,0,0,0],
-"Alexander Fadugba" :    [0,1,1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0],
-"Sophia Onabanjo" :      [1,0,0,0,0,0,0,0,0,1,0,0,1,0,1,1,0,0,0,0],
-"William Adebayo" :      [0,0,0,1,1,0,0,0,0,0,1,1,0,1,0,0,0,0,0,1],
-"Charlotte Oyelowo" :    [0,0,0,0,0,0,1,0,0,1,0,0,1,0,1,1,0,0,0,0],
-"Thomas Oshodi" :        [1,0,0,0,0,0,0,1,0,1,0,0,0,0,1,0,0,0,0,0],
-"Eleanor Adenuga" :      [0,1,1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0],
-"Henry Bankole" :        [0,0,0,1,1,0,0,0,0,0,1,1,0,1,0,0,0,0,0,1],
-"Beatrice Folarin" :     [0,0,0,0,0,0,1,0,0,1,0,0,1,0,1,0,0,0,1,0],
-"George Ogundipe" :      [1,0,0,0,0,0,0,1,0,1,0,0,0,0,1,0,0,0,0,0],
-"Florence Ajayi" :       [0,1,1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0],
-"Arthur Popoola" :       [0,0,0,1,1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1],
-"Lillian Jegede" :       [0,0,0,0,0,0,1,0,0,1,0,0,1,0,1,1,0,0,0,0],
-"Oliver Soyinka" :       [1,0,0,0,0,0,0,1,0,1,0,0,0,0,1,0,0,0,0,0],
-"Amelia Abiola" :        [0,1,1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0],
-"Edward Otedola" :       [0,0,0,1,1,0,0,0,0,0,1,1,0,1,0,0,0,0,0,1],
-"Grace Afolayan" :       [0,0,0,0,0,0,1,0,0,1,0,0,1,0,1,0,0,0,1,0],
-"Frederick Akindele" :   [1,0,0,0,0,0,0,1,0,1,0,0,0,0,1,0,0,0,0,0],
-"Alice Bello" :          [0,1,1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0],
-"Philip Durojaiye" :     [0,0,0,1,1,0,0,0,0,0,1,1,0,1,0,0,0,0,0,1],
-"Rose Eniola" :          [0,0,0,0,0,0,1,0,0,1,0,0,1,0,1,1,0,0,0,0],
-"Joseph Gbadamosi" :     [1,0,0,0,0,0,0,1,0,1,0,0,0,0,1,0,0,0,0,0],
-"Clara Ishola" :         [0,1,1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0],
-"Richard Kolawole" :     [0,0,0,1,1,0,0,0,0,0,1,1,0,1,0,0,0,0,0,1],
-"Martha Ladipo" :        [0,0,0,0,0,0,1,0,0,1,0,0,1,0,1,0,0,0,1,0],
-"David Makanjuola" :     [1,0,0,0,0,0,0,1,0,1,0,0,0,0,1,0,0,0,0,0],
-"Hazel Odumosu" :        [0,1,1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0],
-"Robert Olaniyan" :      [0,0,0,1,1,0,0,0,0,0,1,1,0,1,0,0,0,0,0,1],
-"Jane Onasanya" :        [0,0,0,0,0,0,1,0,0,1,0,0,1,0,1,1,0,0,0,0],
-"Charles Sanusi" :       [1,0,0,0,0,0,0,1,0,1,0,0,0,0,1,0,0,0,0,0],
-"Evelyn Tinubu" :        [0,1,1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0],
-"Francis Williams-Adeola" : [0,0,0,1,1,0,0,0,0,0,1,1,0,1,0,0,0,0,0,1],
-"Mary Yerokun" :         [0,0,0,0,0,0,1,0,0,1,0,0,1,0,1,0,0,0,1,0],
-"George Alaba" :         [1,0,0,0,0,0,0,1,0,1,0,0,0,0,1,0,0,0,0,0],
-"Sarah Awolowo" :        [0,1,1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0],
-"Peter Dokpesi" :        [0,0,0,1,1,0,0,0,0,0,1,1,0,1,0,0,0,0,0,1],
-"Anne Esho" :            [0,0,0,0,0,0,1,0,0,1,0,0,1,0,1,1,0,0,0,0],
-"Michael Folorunsho" :   [1,0,0,0,0,0,0,1,0,1,0,0,0,0,1,0,0,0,0,0],
-"Lucy Idowu" :           [0,1,1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0],
-"Stephen Jolayemi" :     [0,0,0,1,1,0,0,0,0,0,1,1,0,1,0,0,0,0,0,1],
-"Diana Kayode" :         [0,0,0,0,0,0,1,0,0,1,0,0,1,0,1,0,0,0,1,0],
-"Christopher Mobolaji" : [1,0,0,0,0,0,0,1,0,1,0,0,0,0,1,0,0,0,0,0],
-"Ruby Ogunlesi" :        [0,1,1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0]
+students = {
+    "James Adeyemi" :        [1,0,0,1,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0],
+    "Elizabeth Olawale" : [0,1,1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0],
+    "Benjamin Babatunde" : [1,0,0,0,0,0,0,1,0,1,0,0,0,0,1,0,0,0,0,0],
+    "Catherine Olatunji" :   [0,0,0,0,0,0,1,0,0,1,0,0,1,0,1,0,0,0,0,0],
+    "Samuel Okorocha" :      [0,0,0,1,1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1],
+    "Victoria Akinyemi" :    [0,1,1,0,0,1,0,0,0,0,0,0,0,0,0,1,0,1,0,0],
+    "Daniel Oyedele" :       [1,0,0,0,0,0,0,1,0,0,0,0,1,0,1,1,0,0,0,0],
+    "Margaret Balogun" :     [0,0,0,0,0,0,1,0,0,1,0,0,1,0,1,0,0,0,0,0],
+    "Alexander Fadugba" :    [0,1,1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0],
+    "Sophia Onabanjo" :      [1,0,0,0,0,0,0,0,0,1,0,0,1,0,1,1,0,0,0,0],
+    "William Adebayo" :      [0,0,0,1,1,0,0,0,0,0,1,1,0,1,0,0,0,0,0,1],
+    "Charlotte Oyelowo" :    [0,0,0,0,0,0,1,0,0,1,0,0,1,0,1,1,0,0,0,0],
+    "Thomas Oshodi" :        [1,0,0,0,0,0,0,1,0,1,0,0,0,0,1,0,0,0,0,0],
+    "Eleanor Adenuga" :      [0,1,1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0],
+    "Henry Bankole" :        [0,0,0,1,1,0,0,0,0,0,1,1,0,1,0,0,0,0,0,1],
+    "Beatrice Folarin" :     [0,0,0,0,0,0,1,0,0,1,0,0,1,0,1,0,0,0,1,0],
+    "George Ogundipe" :      [1,0,0,0,0,0,0,1,0,1,0,0,0,0,1,0,0,0,0,0],
+    "Florence Ajayi" :       [0,1,1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0],
+    "Arthur Popoola" :       [0,0,0,1,1,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1],
+    "Lillian Jegede" :       [0,0,0,0,0,0,1,0,0,1,0,0,1,0,1,1,0,0,0,0],
+    "Oliver Soyinka" :       [1,0,0,0,0,0,0,1,0,1,0,0,0,0,1,0,0,0,0,0],
+    "Amelia Abiola" :        [0,1,1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0],
+    "Edward Otedola" :       [0,0,0,1,1,0,0,0,0,0,1,1,0,1,0,0,0,0,0,1],
+    "Grace Afolayan" :       [0,0,0,0,0,0,1,0,0,1,0,0,1,0,1,0,0,0,1,0],
+    "Frederick Akindele" :   [1,0,0,0,0,0,0,1,0,1,0,0,0,0,1,0,0,0,0,0],
+    "Alice Bello" :          [0,1,1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0],
+    "Philip Durojaiye" :     [0,0,0,1,1,0,0,0,0,0,1,1,0,1,0,0,0,0,0,1],
+    "Rose Eniola" :          [0,0,0,0,0,0,1,0,0,1,0,0,1,0,1,1,0,0,0,0],
+    "Joseph Gbadamosi" :     [1,0,0,0,0,0,0,1,0,1,0,0,0,0,1,0,0,0,0,0],
+    "Clara Ishola" :         [0,1,1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0],
+    "Richard Kolawole" :     [0,0,0,1,1,0,0,0,0,0,1,1,0,1,0,0,0,0,0,1],
+    "Martha Ladipo" :        [0,0,0,0,0,0,1,0,0,1,0,0,1,0,1,0,0,0,1,0],
+    "David Makanjuola" :     [1,0,0,0,0,0,0,1,0,1,0,0,0,0,1,0,0,0,0,0],
+    "Hazel Odumosu" :        [0,1,1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0],
+    "Robert Olaniyan" :      [0,0,0,1,1,0,0,0,0,0,1,1,0,1,0,0,0,0,0,1],
+    "Jane Onasanya" :        [0,0,0,0,0,0,1,0,0,1,0,0,1,0,1,1,0,0,0,0],
+    "Charles Sanusi" :       [1,0,0,0,0,0,0,1,0,1,0,0,0,0,1,0,0,0,0,0],
+    "Evelyn Tinubu" :        [0,1,1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0],
+    "Francis Williams-Adeola" : [0,0,0,1,1,0,0,0,0,0,1,1,0,1,0,0,0,0,0,1],
+    "Mary Yerokun" :         [0,0,0,0,0,0,1,0,0,1,0,0,1,0,1,0,0,0,1,0],
+    "George Alaba" :         [1,0,0,0,0,0,0,1,0,1,0,0,0,0,1,0,0,0,0,0],
+    "Sarah Awolowo" :        [0,1,1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0],
+    "Peter Dokpesi" :        [0,0,0,1,1,0,0,0,0,0,1,1,0,1,0,0,0,0,0,1],
+    "Anne Esho" :            [0,0,0,0,0,0,1,0,0,1,0,0,1,0,1,1,0,0,0,0],
+    "Michael Folorunsho" :   [1,0,0,0,0,0,0,1,0,1,0,0,0,0,1,0,0,0,0,0],
+    "Lucy Idowu" :           [0,1,1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0],
+    "Stephen Jolayemi" :     [0,0,0,1,1,0,0,0,0,0,1,1,0,1,0,0,0,0,0,1],
+    "Diana Kayode" :         [0,0,0,0,0,0,1,0,0,1,0,0,1,0,1,0,0,0,1,0],
+    "Christopher Mobolaji" : [1,0,0,0,0,0,0,1,0,1,0,0,0,0,1,0,0,0,0,0],
+    "Ruby Ogunlesi" :        [0,1,1,0,0,1,0,0,1,0,0,0,0,0,0,0,0,1,0,0]
 }
+
+def load_students():
+    if os.path.exists("students.json") and os.path.getsize("students.json") > 0:
+        with open("students.json", "r") as f:
+            data = json.load(f)
+            # Ensure all keys are strings (JSON keys are always strings, but just in case)
+            return {str(k): v for k, v in data.items()}
+    else:
+        with open("students.json", "w") as f:
+            json.dump(students, f, indent=4)
+        return students.copy()
+    
+def save_students(students):
+    with open("students.json", "w") as f:
+        json.dump(students, f, indent=4)
 
 # Session State Initialization
 if "students" not in st.session_state:
-    st.session_state.students = students.copy()
+    st.session_state.students = load_students()
     
 students = st.session_state.students
 
@@ -114,7 +132,7 @@ def add_edges(G, students):
             # if shared_skills:
             #     G.add_edge(i, j, weight=len(shared_skills))
 
-add_edges(G, students)
+# add_edges(G, students)
 
 st.title("Student Collaboration System")
 
@@ -164,6 +182,11 @@ if st.session_state.show_form:
                 # Create skill vector
                 skill_vector = [1 if skill in new_skills else 0 for skill in skills]
                 students[new_name] = skill_vector
+                
+                # Save to JSON File
+                save_students(students)
+                
+                st.write(f"{new_name} added to the system with skills: {', '.join(new_skills)}")
                 
                 # Update index mappings
                 
