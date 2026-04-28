@@ -108,29 +108,34 @@ for i in index_to_name:
     G.add_node(i)
     
 #Add edges
-def add_edges(G, students):
-    names = list(students.keys())
+# def add_edges(G, students):
+names = list(students.keys())
+
+
+for i in range(len(names)):
+    for j in range(i + 1, len(names)):
     
-    
-    for i in range(len(names)):
-        for j in range(i + 1, len(names)):
+        # Calculate similarity based on shared skills
+        # skills1 = set(get_student_skills(students[student1]))
+        # skills2 = set(get_student_skills(students[student2]))
+        # shared_skills = skills1.intersection(skills2)
         
-            # Calculate similarity based on shared skills
-            # skills1 = set(get_student_skills(students[student1]))
-            # skills2 = set(get_student_skills(students[student2]))
-            # shared_skills = skills1.intersection(skills2)
+        s1 = students[names[i]]
+        s2 = students[names[j]]
+        
+        sim = sum(1 for a, b in zip(s1, s2) if a == 1 and b == 1)  # Simple count of shared skills
+        
+        if sim > 0:  # Only add edge if there's at least one shared skill
+            distance = 1 / (sim + 1)  # Inverse of similarity for distance
             
-            s1 = students[names[i]]
-            s2 = students[names[j]]
-            
-            sim = sum(1 for a, b in zip(s1, s2) if a == 1 and b == 1)  # Simple count of shared skills
-            
-            if sim > 0:  # Only add edge if there's at least one shared skill
-                distance = 1 / (sim + 1)  # Inverse of similarity for distance
-                
-                G.add_edge(i, j, weight=sim, distance= distance)
-            # if shared_skills:
-            #     G.add_edge(i, j, weight=len(shared_skills))
+            G.add_edge(
+                name_to_index[names[i]],
+                name_to_index[names[j]],
+                weight=sim, 
+                distance= distance
+            )
+        # if shared_skills:
+        #     G.add_edge(i, j, weight=len(shared_skills))
 
 # add_edges(G, students)
 
